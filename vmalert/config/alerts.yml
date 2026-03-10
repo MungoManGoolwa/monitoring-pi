@@ -1,0 +1,48 @@
+groups:
+  - name: musick-uptime
+    interval: 30s
+    rules:
+      - alert: MusickDown
+        expr: probe_success{job="blackbox-musick"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "musick.com.au is DOWN"
+          description: "musick.com.au has been unreachable for more than 2 minutes."
+
+      - alert: MusickSlowResponse
+        expr: probe_duration_seconds{job="blackbox-musick"} > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick.com.au slow response"
+          description: "Response time is {{ $value | humanizeDuration }} (threshold: 2s)."
+
+      - alert: MusickSSLExpiringSoon
+        expr: (probe_ssl_earliest_cert_expiry{job="blackbox-musick"} - time()) / 86400 < 14
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick.com.au SSL certificate expiring soon"
+          description: "SSL certificate expires in {{ $value | printf \"%.0f\" }} days."
+
+      - alert: MusickSSLExpiryCritical
+        expr: (probe_ssl_earliest_cert_expiry{job="blackbox-musick"} - time()) / 86400 < 3
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "musick.com.au SSL certificate expiring in < 3 days"
+          description: "SSL certificate expires in {{ $value | printf \"%.0f\" }} days. Renew immediately."
+
+      - alert: MusickHTTPStatusError
+        expr: probe_http_status_code{job="blackbox-musick"} != 200
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "musick.com.au returning HTTP {{ $value }}"
+          description: "Expected HTTP 200 but got {{ $value }}."

@@ -3,6 +3,7 @@
 # Port allocations:
 #   3000  - Grafana
 #   8428  - VictoriaMetrics
+#   8880  - vmalert
 #   3100  - Loki
 #   9093  - Alertmanager
 #   9115  - Blackbox Exporter
@@ -22,6 +23,24 @@ services:
     command:
       - "--storageDataPath=/storage"
       - "--retentionPeriod=${VM_RETENTION_PERIOD:-12}"
+    restart: unless-stopped
+
+  vmalert:
+    image: victoriametrics/vmalert:latest
+    container_name: vmalert
+    ports:
+      - "8880:8880"
+    volumes:
+      - ./vmalert/config:/etc/vmalert
+    command:
+      - "--datasource.url=http://victoria-metrics:8428"
+      - "--remoteRead.url=http://victoria-metrics:8428"
+      - "--remoteWrite.url=http://victoria-metrics:8428"
+      - "--notifier.url=http://alertmanager:9093"
+      - "--rule=/etc/vmalert/*.yml"
+    depends_on:
+      - victoria-metrics
+      - alertmanager
     restart: unless-stopped
 
   grafana:
@@ -52,14 +71,17 @@ services:
       - ./loki/config/loki.yml:/etc/loki/local-config.yaml
     restart: unless-stopped
 
-  # alertmanager:
-  #   image: prom/alertmanager:latest
-  #   container_name: alertmanager
-  #   ports:
-  #     - "9093:9093"
-  #   volumes:
-  #     - ./alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-  #   restart: unless-stopped
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+    restart: unless-stopped
 
   blackbox-exporter:
     image: prom/blackbox-exporter:latest
