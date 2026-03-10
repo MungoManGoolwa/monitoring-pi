@@ -9,3 +9,4 @@ loki/data/
 healthchecks/data/
 **/secrets/
 **/*.bak
+forgejo/data/
