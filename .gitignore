@@ -1,0 +1,11 @@
+.env
+*.secret
+*.key
+*.pem
+*.password
+grafana/data/
+victoria-metrics/data/
+loki/data/
+healthchecks/data/
+**/secrets/
+**/*.bak

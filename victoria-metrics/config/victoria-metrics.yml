@@ -1,0 +1,3 @@
+# VictoriaMetrics configuration
+# This file is mounted into the container at /etc/victoria-metrics/
+# Most configuration is done via command-line flags in docker-compose.yml
