@@ -144,6 +144,21 @@ services:
       - grafana
     restart: unless-stopped
 
+
+  gsc-collector:
+    build: ./gsc-collector
+    container_name: gsc-collector
+    volumes:
+      - ./gsc-collector/secrets:/app/secrets:ro
+    environment:
+      - GSC_CREDENTIALS=/app/secrets/gsc-credentials.json
+      - GSC_SITE_URL=sc-domain:musick.com.au
+      - VM_IMPORT_URL=http://victoria-metrics:8428/api/v1/import/prometheus
+      - GSC_INTERVAL_SECONDS=21600
+    depends_on:
+      - victoria-metrics
+    restart: unless-stopped
+
   # healthchecks:
   #   image: healthchecks/healthchecks:latest
   #   container_name: healthchecks

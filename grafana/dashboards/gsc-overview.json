@@ -1,0 +1,108 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Clicks (Latest Day)",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "thresholds": { "steps": [{ "color": "blue", "value": null }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "gsc_clicks{site=\"musick.com.au\"}", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Impressions (Latest Day)",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "thresholds": { "steps": [{ "color": "purple", "value": null }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "gsc_impressions{site=\"musick.com.au\"}", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "CTR (Latest Day)",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "decimals": 2, "thresholds": { "steps": [{ "color": "orange", "value": null }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "gsc_ctr{site=\"musick.com.au\"}", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Avg Position (Latest Day)",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "decimals": 1, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 10 }, { "color": "red", "value": 20 }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "gsc_position{site=\"musick.com.au\"}", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "Clicks & Impressions",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 15, "showPoints": "always", "pointSize": 6 }, "color": { "mode": "palette-classic" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Impressions" }, "properties": [{ "id": "custom.axisPlacement", "value": "right" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "gsc_clicks{site=\"musick.com.au\"}", "legendFormat": "Clicks", "refId": "A" },
+        { "expr": "gsc_impressions{site=\"musick.com.au\"}", "legendFormat": "Impressions", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "CTR & Average Position",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 10, "showPoints": "always", "pointSize": 6 }, "color": { "mode": "palette-classic" } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "CTR" }, "properties": [{ "id": "unit", "value": "percentunit" }] },
+          { "matcher": { "id": "byName", "options": "Position" }, "properties": [{ "id": "custom.axisPlacement", "value": "right" }, { "id": "custom.transform", "value": "negative-Y" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "gsc_ctr{site=\"musick.com.au\"}", "legendFormat": "CTR", "refId": "A" },
+        { "expr": "gsc_position{site=\"musick.com.au\"}", "legendFormat": "Position", "refId": "B" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Top Queries by Clicks",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": {} },
+      "options": { "sortBy": [{ "displayName": "Value", "desc": true }] },
+      "targets": [{ "expr": "topk(10, gsc_query_clicks{site=\"musick.com.au\"})", "format": "table", "instant": true, "refId": "A" }],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "site": true }, "renameByName": { "query": "Query", "Value": "Clicks" } } }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Top Pages by Clicks",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": {} },
+      "options": { "sortBy": [{ "displayName": "Value", "desc": true }] },
+      "targets": [{ "expr": "topk(10, gsc_page_clicks{site=\"musick.com.au\"})", "format": "table", "instant": true, "refId": "A" }],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true, "site": true }, "renameByName": { "page": "Page", "Value": "Clicks" } } }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["gsc", "musick", "seo"],
+  "time": { "from": "now-7d", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "musick.com.au Search Console",
+  "uid": "gsc-overview",
+  "refresh": ""
+}
