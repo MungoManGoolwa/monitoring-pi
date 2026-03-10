@@ -159,6 +159,20 @@ services:
       - victoria-metrics
     restart: unless-stopped
 
+
+  visual-regression:
+    build: ./playwright
+    container_name: visual-regression
+    volumes:
+      - ./playwright/screenshots:/app/screenshots
+    environment:
+      - VM_IMPORT_URL=http://victoria-metrics:8428/api/v1/import/prometheus
+    depends_on:
+      - victoria-metrics
+    restart: "no"
+    profiles:
+      - testing
+
   # healthchecks:
   #   image: healthchecks/healthchecks:latest
   #   container_name: healthchecks

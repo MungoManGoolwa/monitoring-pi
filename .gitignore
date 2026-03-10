@@ -10,3 +10,5 @@ healthchecks/data/
 **/secrets/
 **/*.bak
 forgejo/data/
+playwright/screenshots/current/
+playwright/screenshots/diff/
