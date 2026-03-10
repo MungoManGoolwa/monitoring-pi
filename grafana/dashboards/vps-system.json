@@ -1,0 +1,210 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "CPU Usage",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "red", "value": 0.9 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "1 - avg(rate(node_cpu_seconds_total{host=\"musick-vps\",mode=\"idle\"}[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Memory Usage",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "red", "value": 0.9 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "1 - (node_memory_MemAvailable_bytes{host=\"musick-vps\"} / node_memory_MemTotal_bytes{host=\"musick-vps\"})", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Disk Usage (/)",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "red", "value": 0.85 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "1 - (node_filesystem_avail_bytes{host=\"musick-vps\",mountpoint=\"/\"} / node_filesystem_size_bytes{host=\"musick-vps\",mountpoint=\"/\"})", "refId": "A" }]
+    },
+    {
+      "type": "stat",
+      "title": "Uptime",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "d",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "(time() - node_boot_time_seconds{host=\"musick-vps\"}) / 86400", "refId": "A" }]
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU Usage Over Time",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": { "lineWidth": 2, "fillOpacity": 20 },
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "rate(node_cpu_seconds_total{host=\"musick-vps\",mode=\"user\"}[5m])", "legendFormat": "cpu{{cpu}} user", "refId": "A" },
+        { "expr": "rate(node_cpu_seconds_total{host=\"musick-vps\",mode=\"system\"}[5m])", "legendFormat": "cpu{{cpu}} system", "refId": "B" },
+        { "expr": "rate(node_cpu_seconds_total{host=\"musick-vps\",mode=\"iowait\"}[5m])", "legendFormat": "cpu{{cpu}} iowait", "refId": "C" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "lineWidth": 2, "fillOpacity": 20, "stacking": { "mode": "normal" } },
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "node_memory_MemTotal_bytes{host=\"musick-vps\"} - node_memory_MemAvailable_bytes{host=\"musick-vps\"}", "legendFormat": "Used", "refId": "A" },
+        { "expr": "node_memory_Buffers_bytes{host=\"musick-vps\"}", "legendFormat": "Buffers", "refId": "B" },
+        { "expr": "node_memory_Cached_bytes{host=\"musick-vps\"}", "legendFormat": "Cached", "refId": "C" },
+        { "expr": "node_memory_MemFree_bytes{host=\"musick-vps\"}", "legendFormat": "Free", "refId": "D" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Network Traffic",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "rate(node_network_receive_bytes_total{host=\"musick-vps\",device=~\"eth.*|ens.*\"}[5m])", "legendFormat": "{{device}} rx", "refId": "A" },
+        { "expr": "-rate(node_network_transmit_bytes_total{host=\"musick-vps\",device=~\"eth.*|ens.*\"}[5m])", "legendFormat": "{{device}} tx", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Disk I/O",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "rate(node_disk_read_bytes_total{host=\"musick-vps\"}[5m])", "legendFormat": "{{device}} read", "refId": "A" },
+        { "expr": "-rate(node_disk_written_bytes_total{host=\"musick-vps\"}[5m])", "legendFormat": "{{device}} write", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Disk Space",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "lineWidth": 2, "fillOpacity": 20, "stacking": { "mode": "normal" } },
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "node_filesystem_size_bytes{host=\"musick-vps\",mountpoint=\"/\"} - node_filesystem_avail_bytes{host=\"musick-vps\",mountpoint=\"/\"}", "legendFormat": "Used", "refId": "A" },
+        { "expr": "node_filesystem_avail_bytes{host=\"musick-vps\",mountpoint=\"/\"}", "legendFormat": "Available", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "System Load",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "targets": [
+        { "expr": "node_load1{host=\"musick-vps\"}", "legendFormat": "1m", "refId": "A" },
+        { "expr": "node_load5{host=\"musick-vps\"}", "legendFormat": "5m", "refId": "B" },
+        { "expr": "node_load15{host=\"musick-vps\"}", "legendFormat": "15m", "refId": "C" }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["vps", "musick", "system"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "musick VPS System",
+  "uid": "vps-system",
+  "refresh": "30s"
+}
