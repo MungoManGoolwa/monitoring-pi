@@ -38,3 +38,11 @@ scrape_configs:
         labels:
           host: 'musick-vps'
           environment: 'production'
+
+  # --- MySQL metrics ---
+  - job_name: 'mysqld-exporter-vps'
+    static_configs:
+      - targets: ['103.249.236.144:9104']
+        labels:
+          host: 'musick-vps'
+          environment: 'production'

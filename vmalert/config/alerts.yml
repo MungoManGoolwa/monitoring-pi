@@ -104,6 +104,45 @@ groups:
           summary: "musick VPS node_exporter unreachable"
           description: "Cannot scrape metrics from musick VPS. Host may be down."
 
+  - name: mysql
+    interval: 60s
+    rules:
+      - alert: MySQLDown
+        expr: up{job="mysqld-exporter-vps"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MySQL exporter is DOWN on musick VPS"
+          description: "Cannot scrape MySQL metrics. MySQL or the exporter may be down."
+
+      - alert: MySQLSlowQueries
+        expr: rate(mysql_global_status_slow_queries[5m]) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MySQL slow queries detected on musick VPS"
+          description: "Slow query rate is {{ $value | printf \"%.2f\" }}/s for more than 10 minutes."
+
+      - alert: MySQLConnectionsHigh
+        expr: mysql_global_status_threads_connected / mysql_global_variables_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MySQL connections above 80% capacity on musick VPS"
+          description: "{{ $value | printf \"%.0f\" }}% of max connections in use."
+
+      - alert: MySQLAbortedConnections
+        expr: rate(mysql_global_status_aborted_connects[5m]) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High rate of aborted MySQL connections on musick VPS"
+          description: "Aborted connection rate is {{ $value | printf \"%.2f\" }}/s."
+
   - name: pi-system
     interval: 60s
     rules:

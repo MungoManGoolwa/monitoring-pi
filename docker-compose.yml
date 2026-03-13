@@ -79,7 +79,7 @@ services:
     container_name: promtail
     volumes:
       - ./promtail/config/promtail.yml:/etc/promtail/config.yml
-      - /var/log/docker:/var/log/docker:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
     command:
       - "-config.file=/etc/promtail/config.yml"
     depends_on:
@@ -194,6 +194,9 @@ services:
       - SECRET_KEY=${HC_SECRET_KEY}
       - SITE_ROOT=${HC_SITE_ROOT}
       - ALLOWED_HOSTS=*
+      - DB_NAME=/data/hc.sqlite
+      - SUPERUSER_EMAIL=brendan@faulds.au
+      - SUPERUSER_PASSWORD=${HC_SUPERUSER_PASSWORD}
     volumes:
       - healthchecks-data:/data
     restart: unless-stopped

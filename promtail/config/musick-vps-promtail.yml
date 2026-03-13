@@ -1,0 +1,48 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/lib/promtail/positions.yaml
+
+clients:
+  - url: http://192.168.1.62:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: musick-access
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: musick-access
+          host: musick-vps
+          environment: production
+          __path__: /home/musick/logs/access.log
+    pipeline_stages:
+      # Each line is wrapped in outer double quotes by OLS combined format.
+      # Account for leading/trailing quote in the regex.
+      - regex:
+          expression: '^"(?P<remote_addr>\S+) \S+ \S+ \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+) (?P<path>\S+) \S+" (?P<status>\d+) (?P<bytes>\S+) "[^"]*" "(?P<user_agent>[^"]*)"$'
+      - labels:
+          method:
+          status:
+
+  - job_name: musick-ols-errors
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: musick-ols-errors
+          host: musick-vps
+          environment: production
+          __path__: /usr/local/lsws/logs/error.log
+
+  - job_name: musick-php-errors
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: musick-php-errors
+          host: musick-vps
+          environment: production
+          __path__: /usr/local/lsws/logs/stderr.log

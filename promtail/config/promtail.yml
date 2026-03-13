@@ -14,8 +14,14 @@ scrape_configs:
           - localhost
         labels:
           job: docker
-          __path__: /var/log/docker/*/*.log
+          host: monitoring-pi
+          __path__: /var/lib/docker/containers/**/*-json.log
     pipeline_stages:
       - docker: {}
+      - json:
+          expressions:
+            stream: stream
+            attrs: attrs
+            tag: attrs.tag
       - labels:
-          container_name:
+          stream:
