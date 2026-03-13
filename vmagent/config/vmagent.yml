@@ -2,6 +2,7 @@ global:
   scrape_interval: 30s
 
 scrape_configs:
+  # --- Blackbox: HTTP probes for musick.com.au ---
   - job_name: 'blackbox-musick'
     metrics_path: /probe
     params:
@@ -9,6 +10,11 @@ scrape_configs:
     static_configs:
       - targets:
           - https://musick.com.au
+          - https://musick.com.au/gigs/
+          - https://musick.com.au/artists/
+          - https://musick.com.au/venues/
+          - https://musick.com.au/api/health.php
+          - https://musick.com.au/tonight/
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -16,3 +22,19 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox-exporter:9115
+
+  # --- Pi system metrics ---
+  - job_name: 'node-exporter-pi'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+        labels:
+          host: 'monitoring-pi'
+          environment: 'monitoring'
+
+  # --- VPS system metrics ---
+  - job_name: 'node-exporter-vps'
+    static_configs:
+      - targets: ['103.249.236.144:9100']
+        labels:
+          host: 'musick-vps'
+          environment: 'production'

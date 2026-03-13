@@ -11,6 +11,7 @@
 #   9115  - Blackbox Exporter
 #   8080  - Healthchecks
 #   8429  - vmagent
+#   9080  - Promtail
 
 services:
 
@@ -73,6 +74,18 @@ services:
       - ./loki/config/loki.yml:/etc/loki/local-config.yaml
     restart: unless-stopped
 
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail/config/promtail.yml:/etc/promtail/config.yml
+      - /var/log/docker:/var/log/docker:ro
+    command:
+      - "-config.file=/etc/promtail/config.yml"
+    depends_on:
+      - loki
+    restart: unless-stopped
+
   alertmanager:
     image: prom/alertmanager:latest
     container_name: alertmanager
@@ -101,6 +114,8 @@ services:
     container_name: vmagent
     ports:
       - "8429:8429"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./vmagent/config/vmagent.yml:/etc/vmagent/vmagent.yml
     command:
@@ -130,7 +145,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
 
-
   webhook-receiver:
     build: ./webhook-receiver
     container_name: webhook-receiver
@@ -143,7 +157,6 @@ services:
     depends_on:
       - grafana
     restart: unless-stopped
-
 
   gsc-collector:
     build: ./gsc-collector
@@ -159,7 +172,6 @@ services:
       - victoria-metrics
     restart: unless-stopped
 
-
   visual-regression:
     build: ./playwright
     container_name: visual-regression
@@ -173,21 +185,22 @@ services:
     profiles:
       - testing
 
-  # healthchecks:
-  #   image: healthchecks/healthchecks:latest
-  #   container_name: healthchecks
-  #   ports:
-  #     - "8080:8000"
-  #   environment:
-  #     - SECRET_KEY=${HC_SECRET_KEY}
-  #     - SITE_ROOT=${HC_SITE_ROOT}
-  #   volumes:
-  #     - healthchecks-data:/data
-  #   restart: unless-stopped
+  healthchecks:
+    image: healthchecks/healthchecks:latest
+    container_name: healthchecks
+    ports:
+      - "8080:8000"
+    environment:
+      - SECRET_KEY=${HC_SECRET_KEY}
+      - SITE_ROOT=${HC_SITE_ROOT}
+      - ALLOWED_HOSTS=*
+    volumes:
+      - healthchecks-data:/data
+    restart: unless-stopped
 
 volumes:
   vm-data:
   grafana-data:
   loki-data:
   forgejo-data:
-  # healthchecks-data:
+  healthchecks-data:

@@ -3,7 +3,7 @@ groups:
     interval: 30s
     rules:
       - alert: MusickDown
-        expr: probe_success{job="blackbox-musick"} == 0
+        expr: probe_success{job="blackbox-musick",instance="https://musick.com.au"} == 0
         for: 2m
         labels:
           severity: critical
@@ -11,13 +11,22 @@ groups:
           summary: "musick.com.au is DOWN"
           description: "musick.com.au has been unreachable for more than 2 minutes."
 
+      - alert: MusickEndpointDown
+        expr: probe_success{job="blackbox-musick",instance!="https://musick.com.au"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick.com.au endpoint down: {{ $labels.instance }}"
+          description: "{{ $labels.instance }} has been failing for more than 5 minutes."
+
       - alert: MusickSlowResponse
         expr: probe_duration_seconds{job="blackbox-musick"} > 2
         for: 5m
         labels:
           severity: warning
         annotations:
-          summary: "musick.com.au slow response"
+          summary: "musick.com.au slow response on {{ $labels.instance }}"
           description: "Response time is {{ $value | humanizeDuration }} (threshold: 2s)."
 
       - alert: MusickSSLExpiringSoon
@@ -44,5 +53,74 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "musick.com.au returning HTTP {{ $value }}"
+          summary: "{{ $labels.instance }} returning HTTP {{ $value }}"
           description: "Expected HTTP 200 but got {{ $value }}."
+
+  - name: vps-system
+    interval: 60s
+    rules:
+      - alert: VPSHighCPU
+        expr: 100 - (avg by(host) (rate(node_cpu_seconds_total{job="node-exporter-vps",mode="idle"}[5m])) * 100) > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick VPS CPU usage above 85%"
+          description: "CPU usage is {{ $value | printf \"%.1f\" }}% for more than 10 minutes."
+
+      - alert: VPSDiskSpaceLow
+        expr: (node_filesystem_avail_bytes{job="node-exporter-vps",mountpoint="/"} / node_filesystem_size_bytes{job="node-exporter-vps",mountpoint="/"}) * 100 < 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick VPS disk space below 15%"
+          description: "Root filesystem has {{ $value | printf \"%.1f\" }}% free."
+
+      - alert: VPSDiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{job="node-exporter-vps",mountpoint="/"} / node_filesystem_size_bytes{job="node-exporter-vps",mountpoint="/"}) * 100 < 5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "musick VPS disk space below 5%"
+          description: "Root filesystem has {{ $value | printf \"%.1f\" }}% free. Immediate action needed."
+
+      - alert: VPSHighMemory
+        expr: (1 - (node_memory_MemAvailable_bytes{job="node-exporter-vps"} / node_memory_MemTotal_bytes{job="node-exporter-vps"})) * 100 > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick VPS memory usage above 90%"
+          description: "Memory usage is {{ $value | printf \"%.1f\" }}%."
+
+      - alert: VPSNodeExporterDown
+        expr: up{job="node-exporter-vps"} == 0
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "musick VPS node_exporter unreachable"
+          description: "Cannot scrape metrics from musick VPS. Host may be down."
+
+  - name: pi-system
+    interval: 60s
+    rules:
+      - alert: PiHighMemory
+        expr: (1 - (node_memory_MemAvailable_bytes{job="node-exporter-pi"} / node_memory_MemTotal_bytes{job="node-exporter-pi"})) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "monitoring-pi memory usage above 85%"
+          description: "Memory usage is {{ $value | printf \"%.1f\" }}%."
+
+      - alert: PiDiskSpaceLow
+        expr: (node_filesystem_avail_bytes{job="node-exporter-pi",mountpoint="/"} / node_filesystem_size_bytes{job="node-exporter-pi",mountpoint="/"}) * 100 < 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "monitoring-pi disk space below 20%"
+          description: "Root filesystem has {{ $value | printf \"%.1f\" }}% free."

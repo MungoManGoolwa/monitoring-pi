@@ -1,0 +1,113 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "stat", "title": "CPU Usage", "gridPos": { "h": 6, "w": 4, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "decimals": 1, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.5 }, { "color": "red", "value": 0.8 }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "1 - avg(rate(node_cpu_seconds_total{host=\"monitoring-pi\",mode=\"idle\"}[5m]))", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "Memory", "gridPos": { "h": 6, "w": 4, "x": 4, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "decimals": 1, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.6 }, { "color": "red", "value": 0.85 }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "1 - (node_memory_MemAvailable_bytes{host=\"monitoring-pi\"} / node_memory_MemTotal_bytes{host=\"monitoring-pi\"})", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "Disk (/)", "gridPos": { "h": 6, "w": 4, "x": 8, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "decimals": 1, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.6 }, { "color": "red", "value": 0.8 }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "1 - (node_filesystem_avail_bytes{host=\"monitoring-pi\",mountpoint=\"/\"} / node_filesystem_size_bytes{host=\"monitoring-pi\",mountpoint=\"/\"})", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "CPU Temp", "gridPos": { "h": 6, "w": 4, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "celsius", "decimals": 1, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 60 }, { "color": "red", "value": 75 }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "node_hwmon_temp_celsius{host=\"monitoring-pi\"}", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "Uptime", "gridPos": { "h": 6, "w": 4, "x": 16, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "d", "decimals": 1, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } },
+      "options": { "colorMode": "background", "graphMode": "none", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "(time() - node_boot_time_seconds{host=\"monitoring-pi\"}) / 86400", "refId": "A" }]
+    },
+    {
+      "type": "stat", "title": "Swap Used", "gridPos": { "h": 6, "w": 4, "x": 20, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "bytes", "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 536870912 }, { "color": "red", "value": 1610612736 }] } } },
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "targets": [{ "expr": "node_memory_SwapTotal_bytes{host=\"monitoring-pi\"} - node_memory_SwapFree_bytes{host=\"monitoring-pi\"}", "refId": "A" }]
+    },
+    {
+      "type": "timeseries", "title": "CPU & Temperature", "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 15 }, "color": { "mode": "palette-classic" } },
+        "overrides": [{ "matcher": { "id": "byName", "options": "Temp" }, "properties": [{ "id": "unit", "value": "celsius" }, { "id": "custom.axisPlacement", "value": "right" }] }] },
+      "targets": [
+        { "expr": "1 - avg(rate(node_cpu_seconds_total{host=\"monitoring-pi\",mode=\"idle\"}[5m]))", "legendFormat": "CPU", "refId": "A" },
+        { "expr": "node_hwmon_temp_celsius{host=\"monitoring-pi\"}", "legendFormat": "Temp", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries", "title": "Memory & Swap", "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "bytes", "custom": { "lineWidth": 2, "fillOpacity": 20, "stacking": { "mode": "normal" } }, "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "expr": "node_memory_MemTotal_bytes{host=\"monitoring-pi\"} - node_memory_MemAvailable_bytes{host=\"monitoring-pi\"}", "legendFormat": "RAM Used", "refId": "A" },
+        { "expr": "node_memory_SwapTotal_bytes{host=\"monitoring-pi\"} - node_memory_SwapFree_bytes{host=\"monitoring-pi\"}", "legendFormat": "Swap Used", "refId": "B" },
+        { "expr": "node_memory_MemAvailable_bytes{host=\"monitoring-pi\"}", "legendFormat": "RAM Free", "refId": "C" }
+      ]
+    },
+    {
+      "type": "timeseries", "title": "Network Traffic", "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "lineWidth": 2, "fillOpacity": 15 }, "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "expr": "rate(node_network_receive_bytes_total{host=\"monitoring-pi\",device=\"eth0\"}[5m])", "legendFormat": "eth0 rx", "refId": "A" },
+        { "expr": "-rate(node_network_transmit_bytes_total{host=\"monitoring-pi\",device=\"eth0\"}[5m])", "legendFormat": "eth0 tx", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries", "title": "Disk I/O", "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "lineWidth": 2, "fillOpacity": 15 }, "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "expr": "rate(node_disk_read_bytes_total{host=\"monitoring-pi\",device=\"nvme0n1\"}[5m])", "legendFormat": "NVMe read", "refId": "A" },
+        { "expr": "-rate(node_disk_written_bytes_total{host=\"monitoring-pi\",device=\"nvme0n1\"}[5m])", "legendFormat": "NVMe write", "refId": "B" }
+      ]
+    },
+    {
+      "type": "timeseries", "title": "System Load", "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "custom": { "lineWidth": 2, "fillOpacity": 10 }, "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "expr": "node_load1{host=\"monitoring-pi\"}", "legendFormat": "1m", "refId": "A" },
+        { "expr": "node_load5{host=\"monitoring-pi\"}", "legendFormat": "5m", "refId": "B" },
+        { "expr": "node_load15{host=\"monitoring-pi\"}", "legendFormat": "15m", "refId": "C" }
+      ]
+    },
+    {
+      "type": "timeseries", "title": "Disk Space", "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "datasource": { "type": "prometheus", "uid": "" },
+      "fieldConfig": { "defaults": { "unit": "bytes", "custom": { "lineWidth": 2, "fillOpacity": 20, "stacking": { "mode": "normal" } }, "color": { "mode": "palette-classic" } } },
+      "targets": [
+        { "expr": "node_filesystem_size_bytes{host=\"monitoring-pi\",mountpoint=\"/\"} - node_filesystem_avail_bytes{host=\"monitoring-pi\",mountpoint=\"/\"}", "legendFormat": "Used", "refId": "A" },
+        { "expr": "node_filesystem_avail_bytes{host=\"monitoring-pi\",mountpoint=\"/\"}", "legendFormat": "Available", "refId": "B" }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["pi", "system", "monitoring"],
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "title": "monitoring-pi System",
+  "uid": "pi-system",
+  "refresh": "30s"
+}
