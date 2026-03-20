@@ -50,6 +50,7 @@ class WebhookHandler(BaseHTTPRequestHandler):
                 print(f"Failed to create annotation: {e}")
 
         print(f"Annotation: {text}")
+
         self.send_response(200)
         self.end_headers()
         self.wfile.write(b'{"status": "ok"}')

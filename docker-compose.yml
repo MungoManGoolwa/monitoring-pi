@@ -139,6 +139,8 @@ services:
       - FORGEJO__server__SSH_DOMAIN=${FORGEJO_DOMAIN:-monitoring-pi}
       - FORGEJO__server__SSH_PORT=${FORGEJO_SSH_PORT:-2222}
       - FORGEJO__server__ROOT_URL=http://${FORGEJO_DOMAIN:-monitoring-pi}:${FORGEJO_HTTP_PORT:-3001}/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - forgejo-data:/data
       - /etc/timezone:/etc/timezone:ro
