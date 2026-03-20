@@ -14,6 +14,7 @@ scrape_configs:
           - https://musick.com.au/artists/
           - https://musick.com.au/venues/
           - https://musick.com.au/api/health.php
+          - https://musick.com.au/api/health.php?deep=1
           - https://musick.com.au/tonight/
     relabel_configs:
       - source_labels: [__address__]
