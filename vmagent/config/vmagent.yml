@@ -31,18 +31,18 @@ scrape_configs:
           host: 'monitoring-pi'
           environment: 'monitoring'
 
-  # --- VPS system metrics ---
+  # --- VPS system metrics (via Tailscale — public ports are firewalled) ---
   - job_name: 'node-exporter-vps'
     static_configs:
-      - targets: ['103.249.236.144:9100']
+      - targets: ['100.65.152.61:9100']
         labels:
           host: 'musick-vps'
           environment: 'production'
 
-  # --- MySQL metrics ---
+  # --- MySQL metrics (via Tailscale — public ports are firewalled) ---
   - job_name: 'mysqld-exporter-vps'
     static_configs:
-      - targets: ['103.249.236.144:9104']
+      - targets: ['100.65.152.61:9104']
         labels:
           host: 'musick-vps'
           environment: 'production'
