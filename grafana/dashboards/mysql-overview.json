@@ -1,0 +1,213 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "type": "stat",
+      "title": "MySQL Up",
+      "gridPos": { "h": 4, "w": 3, "x": 0, "y": 0 },
+      "targets": [{
+        "expr": "mysql_up{job=\"mysqld-exporter-vps\"}",
+        "legendFormat": ""
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" } }, "type": "value" },
+            { "options": { "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ],
+          "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Uptime",
+      "gridPos": { "h": 4, "w": 3, "x": 3, "y": 0 },
+      "targets": [{
+        "expr": "mysql_global_status_uptime{job=\"mysqld-exporter-vps\"}",
+        "legendFormat": ""
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "orange", "value": 3600 }, { "color": "green", "value": 86400 }] }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Current Connections",
+      "gridPos": { "h": 4, "w": 3, "x": 6, "y": 0 },
+      "targets": [{
+        "expr": "mysql_global_status_threads_connected{job=\"mysqld-exporter-vps\"}",
+        "legendFormat": ""
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 100 }] }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Max Connections",
+      "gridPos": { "h": 4, "w": 3, "x": 9, "y": 0 },
+      "targets": [{
+        "expr": "mysql_global_variables_max_connections{job=\"mysqld-exporter-vps\"}",
+        "legendFormat": ""
+      }],
+      "fieldConfig": { "defaults": { "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "type": "gauge",
+      "title": "Connection Usage %",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "targets": [{
+        "expr": "mysql_global_status_threads_connected{job=\"mysqld-exporter-vps\"} / mysql_global_variables_max_connections{job=\"mysqld-exporter-vps\"} * 100",
+        "legendFormat": ""
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 60 }, { "color": "red", "value": 80 }] }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Slow Queries/s",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "targets": [{
+        "expr": "rate(mysql_global_status_slow_queries{job=\"mysqld-exporter-vps\"}[5m])",
+        "legendFormat": ""
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.01 }, { "color": "red", "value": 0.1 }] }
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Questions/s",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "targets": [{
+        "expr": "rate(mysql_global_status_questions{job=\"mysqld-exporter-vps\"}[5m])",
+        "legendFormat": ""
+      }],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 1,
+          "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 500 }, { "color": "red", "value": 1000 }] }
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Queries Per Second",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "targets": [
+        { "expr": "rate(mysql_global_status_questions{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Questions" },
+        { "expr": "rate(mysql_global_status_slow_queries{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Slow Queries" },
+        { "expr": "rate(mysql_global_status_commands_total{job=\"mysqld-exporter-vps\",command=\"select\"}[5m])", "legendFormat": "SELECT" },
+        { "expr": "rate(mysql_global_status_commands_total{job=\"mysqld-exporter-vps\",command=\"insert\"}[5m])", "legendFormat": "INSERT" },
+        { "expr": "rate(mysql_global_status_commands_total{job=\"mysqld-exporter-vps\",command=\"update\"}[5m])", "legendFormat": "UPDATE" },
+        { "expr": "rate(mysql_global_status_commands_total{job=\"mysqld-exporter-vps\",command=\"delete\"}[5m])", "legendFormat": "DELETE" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Connections",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "targets": [
+        { "expr": "mysql_global_status_threads_connected{job=\"mysqld-exporter-vps\"}", "legendFormat": "Connected" },
+        { "expr": "mysql_global_status_threads_running{job=\"mysqld-exporter-vps\"}", "legendFormat": "Running" },
+        { "expr": "mysql_global_variables_max_connections{job=\"mysqld-exporter-vps\"}", "legendFormat": "Max" },
+        { "expr": "rate(mysql_global_status_aborted_connects{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Aborted/s" }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "InnoDB Buffer Pool",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "targets": [
+        { "expr": "mysql_global_status_buffer_pool_pages{job=\"mysqld-exporter-vps\",state=\"data\"}", "legendFormat": "Data Pages" },
+        { "expr": "mysql_global_status_buffer_pool_pages{job=\"mysqld-exporter-vps\",state=\"free\"}", "legendFormat": "Free Pages" },
+        { "expr": "mysql_global_status_buffer_pool_dirty_pages{job=\"mysqld-exporter-vps\"}", "legendFormat": "Dirty Pages" }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 20, "stacking": { "mode": "normal" } } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "InnoDB I/O",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [
+        { "expr": "rate(mysql_global_status_innodb_data_reads{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Reads/s" },
+        { "expr": "rate(mysql_global_status_innodb_data_writes{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Writes/s" },
+        { "expr": "rate(mysql_global_status_innodb_data_fsyncs{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Fsyncs/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Network Traffic",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "targets": [
+        { "expr": "rate(mysql_global_status_bytes_received{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Received" },
+        { "expr": "rate(mysql_global_status_bytes_sent{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Sent" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 15 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Temporary Objects",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "targets": [
+        { "expr": "rate(mysql_global_status_created_tmp_tables{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Tmp Tables/s" },
+        { "expr": "rate(mysql_global_status_created_tmp_disk_tables{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Tmp Disk Tables/s" },
+        { "expr": "rate(mysql_global_status_created_tmp_files{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Tmp Files/s" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Table Locks",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "targets": [
+        { "expr": "rate(mysql_global_status_table_locks_immediate{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Immediate" },
+        { "expr": "rate(mysql_global_status_table_locks_waited{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Waited" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Thread Activity",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "targets": [
+        { "expr": "mysql_global_status_threads_connected{job=\"mysqld-exporter-vps\"}", "legendFormat": "Connected" },
+        { "expr": "mysql_global_status_threads_running{job=\"mysqld-exporter-vps\"}", "legendFormat": "Running" },
+        { "expr": "mysql_global_status_threads_cached{job=\"mysqld-exporter-vps\"}", "legendFormat": "Cached" },
+        { "expr": "rate(mysql_global_status_threads_created{job=\"mysqld-exporter-vps\"}[5m])", "legendFormat": "Created/s" }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 } } }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["mysql", "musick"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "Australia/Brisbane",
+  "title": "MySQL — musick.com.au",
+  "uid": "mysql-musick",
+  "version": 1
+}
