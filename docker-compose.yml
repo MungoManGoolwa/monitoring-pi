@@ -26,6 +26,7 @@ services:
     command:
       - "--storageDataPath=/storage"
       - "--retentionPeriod=${VM_RETENTION_PERIOD:-12}"
+      - "--vmui.customDashboardsPath=/etc/victoria-metrics"
     restart: unless-stopped
 
   vmalert:

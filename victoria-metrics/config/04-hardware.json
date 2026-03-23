@@ -1,0 +1,1 @@
+{"title":"Temperature and Hardware","rows":[{"panels":[{"title":"Hardware Temperature (C)","width":6,"expr":["node_hwmon_temp_celsius"]},{"title":"Open File Descriptors","width":6,"expr":["process_open_fds"]}]}]}
