@@ -5,6 +5,7 @@ set -euo pipefail
 BACKUP_DIR="/opt/monitoring/backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_NAME="monitoring-backup-${TIMESTAMP}"
+[ -f "/home/brendan/.env.deploy" ] && source "/home/brendan/.env.deploy"
 HC_URL="${HC_BACKUP_URL:-http://localhost:8080/ping/change-me}"
 
 mkdir -p "${BACKUP_DIR}"
