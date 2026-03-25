@@ -181,6 +181,15 @@ services:
       - healthchecks-data:/data
     restart: unless-stopped
 
+  landing:
+    image: nginx:alpine
+    container_name: landing
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/usr/share/nginx/html:ro
+    restart: unless-stopped
+
 volumes:
   vm-data:
   grafana-data:

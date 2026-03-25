@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>musick.com.au — RPi Services</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: rgba(255,255,255,0.07);
+    --text: #e2e8f0;
+    --muted: #6b7280;
+    --cyan: #22d3ee;
+    --purple: #a78bfa;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --orange: #fb923c;
+    --blue: #60a5fa;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 24px 64px;
+  }
+  header {
+    max-width: 1100px;
+    margin: 0 auto 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+  .logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--purple), var(--cyan));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+  header p { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .pi-info {
+    margin-left: auto;
+    text-align: right;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .pi-info span { color: var(--cyan); }
+  main { max-width: 1100px; margin: 0 auto; }
+  h2 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted);
+    margin: 32px 0 12px;
+  }
+  h2:first-of-type { margin-top: 0; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  a.card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-decoration: none;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  a.card:hover {
+    border-color: rgba(255,255,255,0.18);
+    transform: translateY(-1px);
+  }
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .card-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .card h3 { font-size: 14px; font-weight: 600; color: var(--text); }
+  .card .port {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: monospace;
+    background: rgba(255,255,255,0.05);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+  footer {
+    max-width: 1100px;
+    margin: 48px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🎵</div>
+  <div>
+    <h1>musick.com.au — RPi Services</h1>
+    <p>Raspberry Pi CM4 · Monitoring &amp; tooling stack</p>
+  </div>
+  <div class="pi-info">
+    Tailscale <span>100.121.227.39</span><br>
+    LAN <span>192.168.1.62</span>
+  </div>
+</header>
+
+<main>
+
+  <h2>Command &amp; Monitoring</h2>
+  <div class="grid">
+
+    <a class="card" href="http://100.121.227.39:8001" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(139,92,246,0.15)">🎛️</div>
+        <h3>Mission Control</h3>
+        <div class="dot"></div>
+        <span class="port">:8001</span>
+      </div>
+      <p>musick.com.au ops dashboard — uptime, KPIs, traffic, SEO, errors, AI briefings, cron status.</p>
+    </a>
+
+    <a class="card" href="http://100.121.227.39:3000" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(251,146,60,0.15)">📊</div>
+        <h3>Grafana</h3>
+        <div class="dot"></div>
+        <span class="port">:3000</span>
+      </div>
+      <p>Server metrics, GSC dashboards, log exploration. Login: see credentials doc.</p>
+    </a>
+
+    <a class="card" href="http://100.121.227.39:8428/vmui" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(34,211,238,0.15)">📈</div>
+        <h3>VictoriaMetrics</h3>
+        <div class="dot"></div>
+        <span class="port">:8428</span>
+      </div>
+      <p>Time-series metrics storage. vmui for ad-hoc queries. 12-month retention.</p>
+    </a>
+
+    <a class="card" href="http://100.121.227.39:8080" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(74,222,128,0.15)">✅</div>
+        <h3>Healthchecks.io</h3>
+        <div class="dot"></div>
+        <span class="port">:8080</span>
+      </div>
+      <p>Cron job monitoring — 50+ checks across musick.com.au and RPi scripts.</p>
+    </a>
+
+  </div>
+
+  <h2>Alerting &amp; Logging</h2>
+  <div class="grid">
+
+    <a class="card" href="http://100.121.227.39:9093" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(248,113,113,0.15)">🔔</div>
+        <h3>Alertmanager</h3>
+        <div class="dot"></div>
+        <span class="port">:9093</span>
+      </div>
+      <p>Alert routing and silencing for vmalert rules. Email notifications via SMTP.</p>
+    </a>
+
+    <a class="card" href="http://100.121.227.39:8880" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(251,191,36,0.15)">⚡</div>
+        <h3>vmalert</h3>
+        <div class="dot"></div>
+        <span class="port">:8880</span>
+      </div>
+      <p>Alert rule evaluation against VictoriaMetrics. Fires to Alertmanager.</p>
+    </a>
+
+    <a class="card" href="http://100.121.227.39:3000/explore" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(251,146,60,0.15)">📋</div>
+        <h3>Loki (via Grafana)</h3>
+        <div class="dot"></div>
+        <span class="port">:3100</span>
+      </div>
+      <p>Log aggregation — Docker container logs shipped via Promtail. Query in Grafana Explore.</p>
+    </a>
+
+  </div>
+
+  <h2>Scrapers &amp; Collectors</h2>
+  <div class="grid">
+
+    <a class="card" href="http://100.121.227.39:8429/targets" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(96,165,250,0.15)">🔍</div>
+        <h3>vmagent</h3>
+        <div class="dot"></div>
+        <span class="port">:8429</span>
+      </div>
+      <p>Prometheus-compatible scraper. Collects VPS node exporter, MySQL, blackbox targets.</p>
+    </a>
+
+    <a class="card" href="http://100.121.227.39:9115" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(34,211,238,0.15)">🌐</div>
+        <h3>Blackbox Exporter</h3>
+        <div class="dot"></div>
+        <span class="port">:9115</span>
+      </div>
+      <p>HTTP/HTTPS probe for musick.com.au uptime and SSL monitoring.</p>
+    </a>
+
+    <a class="card" href="#" onclick="return false" style="opacity:0.5;cursor:default">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(34,211,238,0.15)">🔎</div>
+        <h3>GSC Collector</h3>
+        <div class="dot" style="background:var(--muted)"></div>
+        <span class="port">internal</span>
+      </div>
+      <p>Google Search Console data collector — ships impressions, clicks, position to VictoriaMetrics every 6h.</p>
+    </a>
+
+  </div>
+
+  <h2>Infrastructure</h2>
+  <div class="grid">
+
+    <a class="card" href="#" onclick="return false" style="opacity:0.5;cursor:default">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(167,139,250,0.15)">🪝</div>
+        <h3>Webhook Receiver</h3>
+        <div class="dot" style="background:var(--muted)"></div>
+        <span class="port">:9999</span>
+      </div>
+      <p>Receives GitHub webhooks and Grafana alerts. Triggers deploy pipeline.</p>
+    </a>
+
+    <a class="card" href="https://login.tailscale.com" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(96,165,250,0.15)">🔒</div>
+        <h3>Tailscale</h3>
+        <div class="dot"></div>
+        <span class="port">VPN</span>
+      </div>
+      <p>All services accessible via <code style="font-size:11px;color:var(--cyan)">100.121.227.39</code>. Device-level auth — no exposed ports.</p>
+    </a>
+
+  </div>
+
+  <h2>External Services</h2>
+  <div class="grid">
+
+    <a class="card" href="https://musick.com.au" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(139,92,246,0.15)">🎸</div>
+        <h3>musick.com.au</h3>
+        <div class="dot"></div>
+        <span class="port">VPS</span>
+      </div>
+      <p>Live site. BinaryLane VPS 103.249.236.144 — PHP 8.1, MySQL 8.0, OpenLiteSpeed.</p>
+    </a>
+
+    <a class="card" href="https://rexe-4z.sentry.io/projects/musick/" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(248,113,113,0.15)">🐛</div>
+        <h3>Sentry</h3>
+        <div class="dot"></div>
+        <span class="port">cloud</span>
+      </div>
+      <p>Error tracking for musick.com.au PHP application. Org: rexe-4z / project: musick.</p>
+    </a>
+
+    <a class="card" href="https://dash.cloudflare.com" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(251,146,60,0.15)">☁️</div>
+        <h3>Cloudflare</h3>
+        <div class="dot"></div>
+        <span class="port">cloud</span>
+      </div>
+      <p>DNS, CDN, WAF. Zone: musick.com.au. Cache hit ratio and traffic analytics.</p>
+    </a>
+
+    <a class="card" href="https://github.com/MungoManGoolwa" target="_blank">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(255,255,255,0.08)">🐙</div>
+        <h3>GitHub</h3>
+        <div class="dot"></div>
+        <span class="port">cloud</span>
+      </div>
+      <p>MungoManGoolwa — musick, monitoring-pi, mission-control, pi-scripts repos.</p>
+    </a>
+
+  </div>
+
+</main>
+
+<footer>
+  <span>musick.com.au RPi Stack</span>
+  <span>All services accessible via Tailscale · <a href="http://100.121.227.39:8001" style="color:var(--cyan);text-decoration:none">Open Mission Control →</a></span>
+</footer>
+
+</body>
+</html>
