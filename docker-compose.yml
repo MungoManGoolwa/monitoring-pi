@@ -2,8 +2,6 @@
 # ================================
 # Port allocations:
 #   3000  - Grafana
-#   3001  - Forgejo (web)
-#   2222  - Forgejo (SSH)
 #   8428  - VictoriaMetrics
 #   8880  - vmalert
 #   3100  - Loki
@@ -127,27 +125,6 @@ services:
       - blackbox-exporter
     restart: unless-stopped
 
-  forgejo:
-    image: codeberg.org/forgejo/forgejo:11
-    container_name: forgejo
-    ports:
-      - "${FORGEJO_HTTP_PORT:-3001}:3000"
-      - "${FORGEJO_SSH_PORT:-2222}:22"
-    environment:
-      - USER_UID=1000
-      - USER_GID=1000
-      - FORGEJO__server__DOMAIN=${FORGEJO_DOMAIN:-monitoring-pi}
-      - FORGEJO__server__SSH_DOMAIN=${FORGEJO_DOMAIN:-monitoring-pi}
-      - FORGEJO__server__SSH_PORT=${FORGEJO_SSH_PORT:-2222}
-      - FORGEJO__server__ROOT_URL=http://${FORGEJO_DOMAIN:-monitoring-pi}:${FORGEJO_HTTP_PORT:-3001}/
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - forgejo-data:/data
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    restart: unless-stopped
-
   webhook-receiver:
     build: ./webhook-receiver
     container_name: webhook-receiver
@@ -208,5 +185,4 @@ volumes:
   vm-data:
   grafana-data:
   loki-data:
-  forgejo-data:
   healthchecks-data:
