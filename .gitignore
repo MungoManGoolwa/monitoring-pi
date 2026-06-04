@@ -12,3 +12,4 @@ healthchecks/data/
 forgejo/data/
 playwright/screenshots/current/
 playwright/screenshots/diff/
+backups/
