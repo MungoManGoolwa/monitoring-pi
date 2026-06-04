@@ -88,6 +88,9 @@ services:
   alertmanager:
     image: prom/alertmanager:latest
     container_name: alertmanager
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     ports:
       - "9093:9093"
     volumes:
