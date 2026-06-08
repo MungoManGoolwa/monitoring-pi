@@ -104,6 +104,15 @@ groups:
           summary: "musick VPS node_exporter unreachable"
           description: "Cannot scrape metrics from musick VPS. Host may be down."
 
+      - alert: VPSSwapHigh
+        expr: (1 - (node_memory_SwapFree_bytes{job="node-exporter-vps"} / node_memory_SwapTotal_bytes{job="node-exporter-vps"})) * 100 > 80
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "musick VPS swap usage above 80%"
+          description: "Swap is {{ $value | printf \"%.1f\" }}% full \u2014 sustained memory pressure (backup/cache spikes pushing pages to swap). Review innodb_buffer_pool_size and cron concurrency."
+
   - name: mysql
     interval: 60s
     rules:
