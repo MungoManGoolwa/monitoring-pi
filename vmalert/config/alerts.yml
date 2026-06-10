@@ -4,12 +4,12 @@ groups:
     rules:
       - alert: MusickDown
         expr: probe_success{job="blackbox-musick",instance="https://musick.com.au"} == 0
-        for: 2m
+        for: 5m
         labels:
           severity: critical
         annotations:
           summary: "musick.com.au is DOWN"
-          description: "musick.com.au has been unreachable for more than 2 minutes."
+          description: "musick.com.au has been unreachable for more than 5 minutes. (for: raised 2m->5m 2026-06-10 to debounce transient Pi->origin network blips that were false-paging while the origin served traffic normally.)"
 
       - alert: MusickEndpointDown
         expr: probe_success{job="blackbox-musick",instance!="https://musick.com.au"} == 0
@@ -48,7 +48,10 @@ groups:
           description: "SSL certificate expires in {{ $value | printf \"%.0f\" }} days. Renew immediately."
 
       - alert: MusickHTTPStatusError
-        expr: probe_http_status_code{job="blackbox-musick"} != 200
+        # probe_success==1 gate: on a connection failure probe_http_status_code is 0,
+        # and 0 != 200 was firing a mislabeled "HTTP 0" critical that duplicates MusickDown.
+        # Only fire when the probe actually CONNECTED and got a real non-200 (e.g. 500/502/403).
+        expr: probe_http_status_code{job="blackbox-musick"} != 200 and probe_success{job="blackbox-musick"} == 1
         for: 2m
         labels:
           severity: critical
@@ -105,13 +108,16 @@ groups:
           description: "Cannot scrape metrics from musick VPS. Host may be down."
 
       - alert: VPSSwapHigh
-        expr: (1 - (node_memory_SwapFree_bytes{job="node-exporter-vps"} / node_memory_SwapTotal_bytes{job="node-exporter-vps"})) * 100 > 80
+        # Gate on genuinely-low available memory. Swap OCCUPANCY alone is sticky \u2014 pages
+        # parked from a past spike keep it >80% even when there is no pressure (swap-in ~0,
+        # mem 36% used, 4.5GB available). Only alert when swap is high AND <15% RAM available.
+        expr: ((1 - (node_memory_SwapFree_bytes{job="node-exporter-vps"} / node_memory_SwapTotal_bytes{job="node-exporter-vps"})) * 100 > 80) and ((node_memory_MemAvailable_bytes{job="node-exporter-vps"} / node_memory_MemTotal_bytes{job="node-exporter-vps"}) * 100 < 15)
         for: 15m
         labels:
           severity: warning
         annotations:
-          summary: "musick VPS swap usage above 80%"
-          description: "Swap is {{ $value | printf \"%.1f\" }}% full \u2014 sustained memory pressure (backup/cache spikes pushing pages to swap). Review innodb_buffer_pool_size and cron concurrency."
+          summary: "musick VPS under memory pressure (swap >80% AND available RAM <15%)"
+          description: "Swap is {{ $value | printf \"%.1f\" }}% full and available memory is low \u2014 real memory pressure. Review innodb_buffer_pool_size and cron concurrency."
 
   - name: mysql
     interval: 60s
