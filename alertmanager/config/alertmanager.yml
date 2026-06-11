@@ -1,8 +1,8 @@
 global:
   resolve_timeout: 5m
-  smtp_smarthost: 'smtp.faulds.au:587'
-  smtp_from: 'brendan@faulds.au'
-  smtp_auth_username: 'brendan@faulds.au'
+  smtp_smarthost: 'smtp.sendgrid.net:587'
+  smtp_from: 'noreply@musick.com.au'
+  smtp_auth_username: 'apikey'
   smtp_auth_password_file: '/etc/alertmanager/secrets/smtp_password'
   smtp_require_tls: true
 
