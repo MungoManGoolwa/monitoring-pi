@@ -16,7 +16,7 @@ route:
 receivers:
   - name: 'email'
     email_configs:
-      - to: 'brendan.r.faulds@gmail.com'
+      - to: 'hello@musick.com.au'
         send_resolved: true
         headers:
           Subject: '[monitoring-pi] {{ .Status | toUpper }}: {{ .CommonLabels.alertname }}'
