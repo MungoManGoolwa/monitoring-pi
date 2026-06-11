@@ -95,6 +95,7 @@ services:
       - "9093:9093"
     volumes:
       - ./alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./alertmanager/secrets/smtp_password:/etc/alertmanager/secrets/smtp_password:ro
     command:
       - "--config.file=/etc/alertmanager/alertmanager.yml"
       - "--storage.path=/alertmanager"

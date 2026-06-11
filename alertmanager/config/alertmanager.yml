@@ -3,7 +3,7 @@ global:
   smtp_smarthost: 'smtp.faulds.au:587'
   smtp_from: 'brendan@faulds.au'
   smtp_auth_username: 'brendan@faulds.au'
-  smtp_auth_password: 'Kaye1310!!'
+  smtp_auth_password_file: '/etc/alertmanager/secrets/smtp_password'
   smtp_require_tls: true
 
 route:
